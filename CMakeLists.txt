@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
 # Create project
 project(lan_eye)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE)
 
@@ -27,6 +27,7 @@ CPMAddPackage(
         VERSION 1.8.7
         GIT_TAG v1.8.7
         GITHUB_REPOSITORY drogonframework/drogon
+        EXCLUDE_FROM_ALL yes
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
