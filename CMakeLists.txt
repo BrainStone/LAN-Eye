@@ -30,4 +30,12 @@ CPMAddPackage(
         EXCLUDE_FROM_ALL yes
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
+# StaticStringMap
+CPMAddPackage(
+        NAME static_map
+        GIT_TAG v2.0.2
+        GITHUB_REPOSITORY BrainStone/StaticMap
+        EXCLUDE_FROM_ALL yes
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE drogon static_map)
