@@ -6,10 +6,9 @@
 #include "common.hpp"
 #include "logger.hpp"
 #include "server.hpp"
-#include "trantor/utils/Logger.h"
 
 void handle_terminate_request(int signal) {
-	LOG_INFO << "Received " << strsignal(signal) << " - Terminating program";
+	LOG_INFO << "Received SIG" << sigabbrev_np(signal) << " - Terminating program";
 
 	stop_webserver();
 }
@@ -33,4 +32,6 @@ int main() {
 		threads.front().join();
 		threads.pop();
 	}
+
+	LOG_INFO << "Goodbye! - Keep your eyes open ;)";
 }

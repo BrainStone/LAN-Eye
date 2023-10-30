@@ -35,8 +35,6 @@ void start_webserver(const std::string& log_path) {
 
 	// Start Application
 	drogon::app().run();
-
-	LOG_INFO << "";
 }
 
 void stop_webserver() {
