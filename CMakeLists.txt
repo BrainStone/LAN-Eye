@@ -8,7 +8,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE)
 
 # Add executable
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME}
+        # Main
+        src/main.cpp
+        # Common utils
+        inc/common.hpp inc/ratio_utils.hpp
+        # Sources
+        inc/server.hpp inc/logger.hpp
+        src/server.cpp src/logger.cpp
+)
+target_include_directories(${PROJECT_NAME} PUBLIC inc)
 
 # Add CPM
 file(

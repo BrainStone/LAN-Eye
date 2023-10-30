@@ -1,30 +1,36 @@
-#include "drogon/drogon.h"
+#include <csignal>
+#include <cstring>
+#include <queue>
+#include <thread>
+
+#include "common.hpp"
+#include "logger.hpp"
+#include "server.hpp"
+#include "trantor/utils/Logger.h"
+
+void handle_terminate_request(int signal) {
+	LOG_INFO << "Received " << strsignal(signal) << " - Terminating program";
+
+	stop_webserver();
+}
+
+std::queue<std::thread> threads;
 
 int main() {
-	// ==== Logging ====
 	const std::string log_path = "log";
 
-	// Application Log
-	drogon::app().setLogPath(log_path).setLogLevel(trantor::Logger::kInfo).setLogLocalTime(true);
+	setup_logging(log_path);
 
-	// Access Log
-	Json::Value accessLoggerConfig;
-	accessLoggerConfig["log_path"] = log_path;
-	drogon::app().addPlugin("drogon::plugin::AccessLogger", {}, accessLoggerConfig);
+	// Register signal handlers
+	std::signal(SIGINT, handle_terminate_request);
+	std::signal(SIGTERM, handle_terminate_request);
 
-	// ==== Application ====
-	// Listen Address
-	drogon::app().addListener("0.0.0.0", 8080);
+	// Start all threads
+	threads.emplace(start_webserver, log_path);
 
-	// Worker Threads
-	drogon::app().setThreadNum(16);
-
-	// Compression Stuff
-	drogon::app().enableGzip(true).enableBrotli(true);
-
-	// Disable Sessions
-	drogon::app().disableSession();
-
-	// Start Application
-	drogon::app().run();
+	LOG_INFO << "Waiting for all threads to stop";
+	while (!threads.empty()) {
+		threads.front().join();
+		threads.pop();
+	}
 }
