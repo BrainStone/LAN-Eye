@@ -1,11 +1,17 @@
 #include "server.hpp"
 
 #include <string>
+#include <thread>
 
 #include "common.hpp"
 #include "drogon/drogon.h"
 
+bool webserver_should_run = false;
+
 void start_webserver(const std::string& log_path) {
+	// Mark that we received a start request
+	webserver_should_run = true;
+
 	// ==== Logging ====
 	// Application log is configured in logger.cpp
 
@@ -35,8 +41,34 @@ void start_webserver(const std::string& log_path) {
 
 	// Start Application
 	drogon::app().run();
+
+	// We're done
+	webserver_should_run = false;
 }
 
 void stop_webserver() {
+	drogon::HttpAppFramework& app = drogon::app();
+
+	if (!webserver_should_run && !app.isRunning() && !app.getLoop()->isRunning()) [[unlikely]] {
+		return;
+	}
+
+	bool first_check = true;
+
+	// Wait for the server to be up before we stop it
+	while (webserver_should_run && !(app.isRunning() && app.getLoop()->isRunning())) [[unlikely]] {
+		if (first_check) [[unlikely]] {
+			LOG_DEBUG << "Webserver received shutdown command before it was up - Waiting for it to be up before "
+			             "shutting it down for real";
+			first_check = false;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	if (!first_check) {
+		LOG_DEBUG << "Webserver is finally up - Stopping it now.";
+	}
+
 	drogon::app().quit();
 }
