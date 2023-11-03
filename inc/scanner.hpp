@@ -3,6 +3,6 @@
 namespace scanner {
 
 void start();
-void stop);
+void stop();
 
 }  // namespace scanner

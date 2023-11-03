@@ -7,9 +7,10 @@
 #include "drogon/drogon.h"
 
 namespace server {
+
 bool should_run = false;
 
-void start_webserver(const std::string& log_path) {
+void start(const std::string& log_path) {
 	// Mark that we received a start request
 	should_run = true;
 
@@ -47,7 +48,7 @@ void start_webserver(const std::string& log_path) {
 	should_run = false;
 }
 
-void stop_webserver() {
+void stop() {
 	drogon::HttpAppFramework& app = drogon::app();
 
 	if (!should_run && !app.isRunning() && !app.getLoop()->isRunning()) [[unlikely]] {
