@@ -14,8 +14,8 @@ add_executable(${PROJECT_NAME}
         # Common utils
         inc/common.hpp inc/ratio_utils.hpp
         # Sources
-        inc/server.hpp inc/logger.hpp
-        src/server.cpp src/logger.cpp
+        inc/server.hpp inc/logger.hpp inc/scanner.hpp
+        src/server.cpp src/logger.cpp src/scanner.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC inc)
 

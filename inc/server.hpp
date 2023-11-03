@@ -2,5 +2,9 @@
 
 #include <string>
 
-void start_webserver(const std::string& log_path);
-void stop_webserver();
+namespace server {
+
+void start(const std::string& log_path);
+void stop();
+
+}  // namespace server

@@ -7,6 +7,7 @@
 
 #include "common.hpp"
 #include "logger.hpp"
+#include "scanner.hpp"
 #include "server.hpp"
 
 std::mutex mtx;
@@ -37,7 +38,8 @@ void shutdown(int signal) {
 	should_run = false;
 	should_run_cv.notify_all();
 
-	stop_webserver();
+	server::stop();
+	scanner::stop();
 }
 
 void handle_terminate_request(int signal) {
@@ -56,7 +58,8 @@ int main() {
 	setup_logging(log_path);
 
 	// Start all threads
-	threads.emplace(start_webserver, log_path);
+	threads.emplace(server::start, log_path);
+	threads.emplace(scanner::start);
 
 	LOG_INFO << "Startup complete";
 	finished_setup = true;
