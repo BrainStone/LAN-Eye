@@ -11,7 +11,8 @@ sudo apt install \
 	cmake \
 	build-essential \
 	git \
+	libcap-dev \
 	libjsoncpp-dev \
-	uuid-dev  \
+	uuid-dev \
 	zlib1g-dev \
 	openssl libssl-dev

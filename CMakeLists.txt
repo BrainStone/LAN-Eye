@@ -14,8 +14,8 @@ add_executable(${PROJECT_NAME}
         # Common utils
         inc/common.hpp inc/ratio_utils.hpp
         # Sources
-        inc/server.hpp inc/logger.hpp inc/scanner.hpp
-        src/server.cpp src/logger.cpp src/scanner.cpp
+        inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp
+        src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC inc)
 
@@ -28,9 +28,14 @@ file(
 )
 include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
+# (System) library dependencies
+
+## libcap
+find_library(LIBCAP_LIBRARY cap)
+
 # Add dependencies (via CPM)
 
-# Boost
+## Boost
 CPMAddPackage(
         NAME Boost
         VERSION 1.83.0
@@ -38,7 +43,7 @@ CPMAddPackage(
         GITHUB_REPOSITORY boostorg/boost
 )
 
-# Drogon webserver
+## Drogon webserver
 CPMAddPackage(
         NAME drogon
         VERSION 1.8.7
@@ -47,7 +52,7 @@ CPMAddPackage(
         EXCLUDE_FROM_ALL yes
 )
 
-# StaticStringMap
+## StaticStringMap
 CPMAddPackage(
         NAME static_map
         GIT_TAG v2.0.2
@@ -55,4 +60,15 @@ CPMAddPackage(
         EXCLUDE_FROM_ALL yes
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE drogon static_map Boost::asio Boost::process)
+# Put everything together
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        # STL stuff
+        stdc++fs
+        # (System) libraries
+        ${LIBCAP_LIBRARY}
+        # CPM dependencies
+        ## Boost
+        Boost::asio Boost::process
+        ## Normal CPM deps
+        drogon static_map
+)

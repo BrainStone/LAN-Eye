@@ -59,7 +59,7 @@ int main() {
 
 	// Start all threads
 	threads.emplace(server::start, log_path);
-	threads.emplace(scanner::start, true);
+	threads.emplace(scanner::start, false);
 
 	LOG_INFO << "Startup complete";
 	finished_setup = true;

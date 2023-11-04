@@ -7,4 +7,9 @@
 
 # Install runtime dependencies
 sudo apt install \
-	nmap
+	nmap \
+	openssl \
+	libcap2 \
+	libjsoncpp25 \
+	libuuid1 \
+	zlib1g
