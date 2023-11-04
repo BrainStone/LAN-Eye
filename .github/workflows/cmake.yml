@@ -26,6 +26,7 @@ jobs:
                 run: ./install_build_deps.sh auto
 
             -   name: Setup C/C++ Compiler
+                id: install_cc
                 uses: rlalik/setup-cpp-compiler@v1.2
                 with:
                     compiler: ${{ matrix.compiler }}
