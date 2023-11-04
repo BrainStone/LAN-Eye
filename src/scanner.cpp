@@ -36,6 +36,7 @@ void start(bool sudo) {
 	                "-oX=-",                                       // Print output as XML
 	                "-PR",  // Try to do an ARP Ping if the host to scan is in the same network
 	                "-sn",  // Ping scan, only check if the host is up
+	                "-T4",  // I am speed
 	            });
 
 	// Actual net to scan
