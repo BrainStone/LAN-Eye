@@ -30,6 +30,14 @@ include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
 # Add dependencies (via CPM)
 
+# Boost
+CPMAddPackage(
+        NAME Boost
+        VERSION 1.83.0
+        GIT_TAG boost-1.83.0
+        GITHUB_REPOSITORY boostorg/boost
+)
+
 # Drogon webserver
 CPMAddPackage(
         NAME drogon
@@ -47,4 +55,4 @@ CPMAddPackage(
         EXCLUDE_FROM_ALL yes
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE drogon static_map)
+target_link_libraries(${PROJECT_NAME} PRIVATE drogon static_map Boost::asio Boost::process)

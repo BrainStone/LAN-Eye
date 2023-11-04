@@ -18,14 +18,14 @@ constexpr tebi_t tebi{};
 constexpr pebi_t pebi{};
 constexpr exbi_t exbi{};
 
-template <typename A, typename R>
+template <typename A, std::intmax_t N, std::intmax_t D>
     requires std::is_arithmetic_v<A>
-constexpr A operator*(A val, R ratio) {
-	return val * A{ratio.num} / A{ratio.den};
+constexpr A operator*(A val, std::ratio<N, D>) {
+	return val * A{N} / A{D};
 }
 
-template <typename A, typename R>
+template <typename A, std::intmax_t N, std::intmax_t D>
     requires std::is_arithmetic_v<A>
-constexpr A operator/(A val, R ratio) {
-	return val * A{ratio.den} / A{ratio.num};
+constexpr A operator/(A val, std::ratio<N, D>) {
+	return val * A{D} / A{N};
 }

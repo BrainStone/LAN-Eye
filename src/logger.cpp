@@ -35,7 +35,7 @@ void setup_logging(const std::string& log_dir) {
 	    });
 
 	// Log level
-	trantor::Logger::setLogLevel(trantor::Logger::kInfo);
+	trantor::Logger::setLogLevel(trantor::Logger::kDebug);
 
 	// Log format
 	trantor::Logger::setDisplayLocalTime(true);

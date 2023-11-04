@@ -2,7 +2,7 @@
 
 namespace scanner {
 
-void start();
+void start(bool sudo = false);
 void stop();
 
 }  // namespace scanner
