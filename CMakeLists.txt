@@ -41,6 +41,7 @@ CPMAddPackage(
         VERSION 1.83.0
         GIT_TAG boost-1.83.0
         GITHUB_REPOSITORY boostorg/boost
+        GIT_SHALLOW ON
 )
 
 ## Drogon webserver
