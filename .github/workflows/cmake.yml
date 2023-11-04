@@ -15,7 +15,7 @@ jobs:
                     - Debug
                 compiler:
                     - gcc
-                    - clang
+                    # - clang # doesn't compile boost
 
         runs-on: ubuntu-22.04
 
