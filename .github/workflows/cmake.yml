@@ -13,14 +13,11 @@ jobs:
                 build_type:
                     - Release
                     - Debug
-                os:
-                    - ubuntu-22.04
-                    - ubuntu-20.04
                 compiler:
                     - gcc
                     - clang
 
-        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-22.04
 
         steps:
             -   uses: actions/checkout@v3
