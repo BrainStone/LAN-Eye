@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME}
         src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC inc)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
 
 # Add CPM
 file(
