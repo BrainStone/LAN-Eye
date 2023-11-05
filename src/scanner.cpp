@@ -9,8 +9,12 @@
 #include "boost/process.hpp"
 #include "capability.hpp"
 #include "common.hpp"
+#include "host_information.hpp"
+#include "pugixml.hpp"
 
 namespace scanner {
+
+const boost::asio::ip::address test = boost::asio::ip::make_address("0.0.0.0");
 
 bool should_run = false;
 std::shared_ptr<boost::process::child> nmap;
@@ -52,8 +56,6 @@ void start(bool sudo) {
 	// Actual net to scan
 	argv.emplace_back("10.69.42.0/24");
 
-	for (const auto& arg : argv) LOG_INFO << arg;
-
 	while (should_run) [[likely]] {
 		boost::asio::io_service ios;
 		std::future<std::string> data, error;
@@ -75,21 +77,42 @@ void start(bool sudo) {
 		if (ec) [[unlikely]] {
 			LOG_WARN << "Error while waiting for the program to end: " << ec.message();
 
-			continue;
+			goto wait_next_run;
 		}
 		// Check for errors during nmap execution
 		else if (rc && (should_run || (rc != SIGINT && rc != SIGTERM))) [[unlikely]] {
 			LOG_WARN << "An error occured (RC " << rc << "):\n" << error.get();
 
-			continue;
+			goto wait_next_run;
 		}
 		// Don't process the data if we're supposed to exit
 		else if (!should_run) [[unlikely]] {
 			break;
 		}
 
-		LOG_INFO << data.get();
+		// Free resources early and make goto work
+		{
+			pugi::xml_document doc;
+			pugi::xml_parse_result result = doc.load_string(data.get().c_str());
 
+			if (!result) {
+				LOG_WARN << "Error while parsing XML response from nmap: " << result.description();
+
+				goto wait_next_run;
+			}
+
+			std::vector<host> hosts;
+			for (pugi::xml_node node : doc.child("nmaprun").children("host")) {
+				host h;
+				node >> h;
+
+				if (!h.ip.is_unspecified()) {
+					hosts.push_back(h);
+				}
+			}
+		}
+
+	wait_next_run:
 		// Wait 5 seconds but allow to be interrupted
 		std::unique_lock<std::mutex> lock(mtx);
 		cv.wait_for(lock, std::chrono::seconds(5), [] { return !should_run; });
