@@ -14,10 +14,8 @@ add_executable(${PROJECT_NAME}
         # Common utils
         inc/common.hpp inc/ratio_utils.hpp
         # Sources
-        inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp
-        src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp
-        src/host_information.cpp
-        inc/host_information.hpp
+        inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp inc/host_information.hpp
+        src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp src/host_information.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC inc)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
