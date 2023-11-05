@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
         # Sources
         inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp
         src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp
+        src/host_information.cpp
+        inc/host_information.hpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC inc)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
@@ -42,6 +44,7 @@ CPMAddPackage(
         VERSION 1.83.0
         GIT_TAG boost-1.83.0
         GITHUB_REPOSITORY boostorg/boost
+        EXCLUDE_FROM_ALL yes
         GIT_SHALLOW ON
 )
 
@@ -62,6 +65,14 @@ CPMAddPackage(
         EXCLUDE_FROM_ALL yes
 )
 
+## Pugixml
+CPMAddPackage(
+        NAME pugixml
+        GIT_TAG v1.14
+        GITHUB_REPOSITORY zeux/pugixml
+        EXCLUDE_FROM_ALL yes
+)
+
 # Put everything together
 target_link_libraries(${PROJECT_NAME} PRIVATE
         # STL stuff
@@ -72,5 +83,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         ## Boost
         Boost::asio Boost::process
         ## Normal CPM deps
-        drogon static_map
+        drogon static_map pugixml
 )
