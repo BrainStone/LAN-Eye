@@ -54,6 +54,7 @@ extern host_map_t host_map;
 const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map);
 Json::Value& operator<<(Json::Value& node, const host_map_t& host_map);
 
-using json_mapping_t = std::tuple<Json::ValueType, const char*, Json::Value&>;
+// Key name, expected type, required, reference to node
+using json_mapping_t = std::tuple<const char*, Json::ValueType, bool, Json::Value&>;
 
 bool map_json_object(const Json::Value& node, const std::vector<json_mapping_t>& mapping);

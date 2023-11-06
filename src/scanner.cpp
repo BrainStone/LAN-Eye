@@ -11,6 +11,7 @@
 #include "capability.hpp"
 #include "common.hpp"
 #include "host_information.hpp"
+#include "json/reader.h"
 #include "json/value.h"
 #include "json/writer.h"
 #include "pugixml.hpp"
@@ -110,7 +111,7 @@ void start(bool sudo) {
 				node >> h;
 
 				if (!h.ip.is_unspecified()) {
-					hosts.push_back(h);
+					hosts.push_back(std::move(h));
 				}
 			}
 
@@ -124,8 +125,24 @@ void start(bool sudo) {
 			}
 
 			Json::StreamWriterBuilder builder;
+			std::string output = Json::writeString(builder, root);
 			LOG_INFO << "Output:";
-			LOG_INFO << Json::writeString(builder, root);
+			LOG_INFO << output;
+
+			root.clear();
+			Json::Reader reader;
+			bool parsingSuccessful = reader.parse(output, root);
+
+			std::list<host> parsed_hosts;
+			for (const Json::Value& node : root) {
+				host h;
+				node >> h;
+
+				parsed_hosts.push_back(std::move(h));
+			}
+
+			LOG_INFO << "Parsing successfull: " << parsingSuccessful;
+			LOG_INFO << "Lists equal: " << (parsed_hosts == hosts);
 		}
 
 	wait_next_run:

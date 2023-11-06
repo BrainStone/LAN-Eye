@@ -67,9 +67,9 @@ const Json::Value& operator>>(const Json::Value& node, host& host) {
 
 	Json::Value ip, mac, hostnames;
 
-	if (!map_json_object(node, {{Json::ValueType::stringValue, "ip", ip},
-	                            {Json::ValueType::nullValue, "mac", mac},
-	                            {Json::ValueType::arrayValue, "hostnames", hostnames}})) {
+	if (!map_json_object(node, {{"ip", Json::ValueType::stringValue, true, ip},
+	                            {"mac", Json::ValueType::stringValue, false, mac},
+	                            {"hostnames", Json::ValueType::arrayValue, true, hostnames}})) {
 		return node;
 	}
 
@@ -100,6 +100,11 @@ Json::Value& operator<<(Json::Value& node, const host& host) {
 
 	node["ip"] = host.ip.to_string();
 	if (host.mac) node["mac"] = *host.mac;
+	Json::Value& hostnames = node["hostnames"];
+
+	for (const std::string& hostname : host.hostnames) {
+		hostnames.append(hostname);
+	}
 
 	return node;
 }
@@ -118,9 +123,9 @@ const Json::Value& operator>>(const Json::Value& node, host_information& host_in
 
 	Json::Value host, first_seen, last_seen;
 
-	if (!map_json_object(node, {{Json::ValueType::objectValue, "host", host},
-	                            {Json::ValueType::realValue, "first_seen", first_seen},
-	                            {Json::ValueType::realValue, "last_seen", last_seen}})) {
+	if (!map_json_object(node, {{"host", Json::ValueType::objectValue, true, host},
+	                            {"first_seen", Json::ValueType::realValue, true, first_seen},
+	                            {"last_seen", Json::ValueType::realValue, true, last_seen}})) {
 		return node;
 	}
 
@@ -178,15 +183,18 @@ Json::Value& operator<<(Json::Value& node, const host_map_t& host_map) {
 
 bool map_json_object(const Json::Value& node, const std::vector<json_mapping_t>& mapping) {
 	for (const json_mapping_t& key : mapping) {
-		if (!node.isMember(std::get<1>(key))) {
-			LOG_DEBUG << "Expected node to be an object that contains the member " << std::get<1>(key);
+		bool is_required = std::get<2>(key);
+
+		if (is_required && !node.isMember(std::get<0>(key))) {
+			LOG_DEBUG << "Expected node to be an object that contains the member " << std::get<0>(key);
 			return false;
 		}
 
-		std::get<2>(key) = node[std::get<1>(key)];
+		const Json::Value& child_node = node[std::get<0>(key)];
+		std::get<3>(key) = child_node;
 
-		if (!std::get<2>(key).isConvertibleTo(std::get<0>(key))) {
-			LOG_DEBUG << "Expected the member " << std::get<1>(key) << " to be convertible to the appropriate type";
+		if (!child_node.isConvertibleTo(std::get<1>(key)) && !(!is_required && child_node.isNull())) {
+			LOG_DEBUG << "Expected the member " << std::get<0>(key) << " to be convertible to the appropriate type";
 			return false;
 		}
 	}
