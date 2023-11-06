@@ -10,6 +10,21 @@
 #include "json/value.h"
 #include "pugixml.hpp"
 
+template <typename TP>
+constexpr TP make_time_point(const typename TP::duration::rep& val) {
+	return TP{typename TP::duration{val}};
+}
+
+template <typename TP_to, typename TP_from>
+constexpr TP_to time_point_cast(const TP_from& time_point) {
+	return std::chrono::time_point_cast<typename TP_to::duration>(time_point);
+}
+
+template <typename TP_to, typename TP_from>
+constexpr TP_to time_point_cast(const typename TP_from::duration::rep& val) {
+	return time_point_cast<TP_to, TP_from>(make_time_point<TP_from>(val));
+}
+
 struct host {
 	boost::asio::ip::address ip;
 	std::optional<std::string> mac;

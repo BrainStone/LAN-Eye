@@ -8,21 +8,6 @@
 using double_duration_t = std::chrono::duration<double>;
 using double_time_point_t = std::chrono::time_point<host_information::time_point_t::clock, double_duration_t>;
 
-template <typename TP>
-constexpr TP make_time_point(const typename TP::duration::rep& val) {
-	return TP{typename TP::duration{val}};
-}
-
-template <typename TP_to, typename TP_from>
-constexpr TP_to time_point_cast(const TP_from& time_point) {
-	return std::chrono::time_point_cast<typename TP_to::duration>(time_point);
-}
-
-template <typename TP_to, typename TP_from>
-constexpr TP_to time_point_cast(const typename TP_from::duration::rep& val) {
-	return time_point_cast<TP_to, TP_from>(make_time_point<TP_from>(val));
-}
-
 void host::find_mac() {
 	// If mac is not set, try to get it a different way
 	if (!mac) {
