@@ -7,18 +7,20 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE)
 
-# Add executable
-add_executable(${PROJECT_NAME}
-        # Main
-        src/main.cpp
+# Add library
+add_library(${PROJECT_NAME}_lib STATIC
         # Common utils
         inc/common.hpp inc/ratio_utils.hpp
         # Sources
         inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp inc/host_information.hpp
         src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp src/host_information.cpp
 )
-target_include_directories(${PROJECT_NAME} PUBLIC inc)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
+target_include_directories(${PROJECT_NAME}_lib PUBLIC inc)
+set_property(TARGET ${PROJECT_NAME}_lib PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
+
+# Add executable
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)
 
 # Add CPM
 file(
@@ -72,7 +74,7 @@ CPMAddPackage(
 )
 
 # Put everything together
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME}_lib PUBLIC
         # STL stuff
         stdc++fs
         # (System) libraries
@@ -83,3 +85,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         ## Normal CPM deps
         drogon static_map pugixml
 )
+
+###############################################################################
+## testing ####################################################################
+###############################################################################
+
+enable_testing()
+include(GoogleTest)
+add_subdirectory(test)
