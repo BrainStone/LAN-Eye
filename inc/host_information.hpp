@@ -1,13 +1,13 @@
 #pragma once
 
-#include <json/value.h>
-
 #include <map>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "boost/asio/ip/address.hpp"
+#include "json/value.h"
 #include "pugixml.hpp"
 
 struct host {
@@ -21,30 +21,39 @@ struct host {
 	bool operator==(const host& other) const = default;
 	bool operator!=(const host& other) const = default;
 
-	friend pugi::xml_node& operator>>(pugi::xml_node& node, host& host);
+	friend const pugi::xml_node& operator>>(const pugi::xml_node& node, host& host);
+	friend const Json::Value& operator>>(const Json::Value& node, host& host);
+	friend Json::Value& operator<<(Json::Value& node, const host& host);
 };
 
 class host_information {
 public:
-	using time_point = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
+	using duration_t = std::chrono::milliseconds;
+	using time_point_t = std::chrono::time_point<std::chrono::system_clock, duration_t>;
 
 private:
-	const host host_data;
-	const time_point first_seen;
-	const time_point last_seen;
+	host host_data;
+	time_point_t first_seen;
+	time_point_t last_seen;
 
 public:
-	host_information(host host_data, const time_point& first_seen, const time_point& last_seen);
-	host_information(const host_information& other) = default;
-	host_information(host_information&& other) = default;
+	host_information() = default;
+	host_information(host host_data, const time_point_t& first_seen, const time_point_t& last_seen);
 
 	bool operator==(const host_information& other) const = default;
 	bool operator!=(const host_information& other) const = default;
+
+	friend const Json::Value& operator>>(const Json::Value& node, host_information& host_information);
+	friend Json::Value& operator<<(Json::Value& node, const host_information& host_information);
 };
 
-using host_map_t = std::map<host_information::time_point, host_information>;
+using host_map_t = std::map<host_information::time_point_t, host_information>;
 
 extern host_map_t host_map;
 
 const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map);
 Json::Value& operator<<(Json::Value& node, const host_map_t& host_map);
+
+using json_mapping_t = std::tuple<Json::ValueType, const char*, Json::Value&>;
+
+bool map_json_object(const Json::Value& node, const std::vector<json_mapping_t>& mapping);

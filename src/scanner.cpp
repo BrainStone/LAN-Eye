@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <list>
 #include <string>
 #include <thread>
 
@@ -10,6 +11,8 @@
 #include "capability.hpp"
 #include "common.hpp"
 #include "host_information.hpp"
+#include "json/value.h"
+#include "json/writer.h"
 #include "pugixml.hpp"
 
 namespace scanner {
@@ -101,7 +104,7 @@ void start(bool sudo) {
 				goto wait_next_run;
 			}
 
-			std::vector<host> hosts;
+			std::list<host> hosts;
 			for (pugi::xml_node node : doc.child("nmaprun").children("host")) {
 				host h;
 				node >> h;
@@ -110,6 +113,19 @@ void start(bool sudo) {
 					hosts.push_back(h);
 				}
 			}
+
+			Json::Value root;
+
+			for (const host& host : hosts) {
+				Json::Value json_host;
+				json_host << host;
+
+				root.append(json_host);
+			}
+
+			Json::StreamWriterBuilder builder;
+			LOG_INFO << "Output:";
+			LOG_INFO << Json::writeString(builder, root);
 		}
 
 	wait_next_run:
