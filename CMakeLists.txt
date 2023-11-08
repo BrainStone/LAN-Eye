@@ -58,9 +58,10 @@ CPMAddPackage(
 )
 
 ## StaticStringMap
+set(BUILD_STATIC_MAP_TESTS OFF)
 CPMAddPackage(
         NAME static_map
-        GIT_TAG v2.0.2
+        GIT_TAG v2.0.3
         GITHUB_REPOSITORY BrainStone/StaticMap
         EXCLUDE_FROM_ALL yes
 )
