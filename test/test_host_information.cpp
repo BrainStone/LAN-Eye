@@ -52,14 +52,13 @@ TEST(TestChronoHelpers, TimePointCast) {
 }
 
 TEST(TestHost, JsonDeserialization) {
-	Json::StreamWriterBuilder builder{};
-	builder["indentation"] = "";
+	Json::Reader reader;
 
 	for (const std::pair<host, std::string>& test : host_test_cases) {
 		host host;
 		Json::Value root;
-		Json::Reader reader;
-		EXPECT_TRUE(reader.parse(test.second, root));
+
+		ASSERT_TRUE(reader.parse(test.second, root));
 
 		root >> host;
 
