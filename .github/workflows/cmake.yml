@@ -19,6 +19,9 @@ jobs:
 
         runs-on: ubuntu-22.04
 
+        env:
+            CPM_SOURCE_CACHE: ~/.cache/CPM
+
         steps:
             -   uses: actions/checkout@v4
 
@@ -31,10 +34,7 @@ jobs:
                 id: cmake-deps
                 uses: actions/cache@v3
                 with:
-                    # cmake cache files are stored in `$build_dir/_deps`. And the actual repos are named `${repo}-src`. `${repo}-subbuild` is needed too
-                    path: |
-                        build/_deps/*-src
-                        build/_deps/*-subbuild
+                    path: ${{ env.CPM_SOURCE_CACHE }}
                     key: ${{ runner.os }}
 
             -   name: After cache
