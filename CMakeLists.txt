@@ -37,6 +37,7 @@ include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 find_library(LIBCAP_LIBRARY cap)
 
 # Add dependencies (via CPM)
+set(CPM_USE_LOCAL_PACKAGES On)
 
 ## Boost
 CPMAddPackage(
