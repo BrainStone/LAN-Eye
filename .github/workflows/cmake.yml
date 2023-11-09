@@ -29,8 +29,10 @@ jobs:
                 id: cmake-deps
                 uses: actions/cache@v3
                 with:
-                    # cmake cache files are stored in `$build_dir/_deps`. And the actual repos are named `${repo}-src`
-                    path: build/_deps/*-src
+                    # cmake cache files are stored in `$build_dir/_deps`. And the actual repos are named `${repo}-src`. `${repo}-subbuild` is needed too
+                    path: |
+                        build/_deps/*-src
+                        build/_deps/*-subbuild
                     key: ${{ runner.os }}
 
             -   name: After cache
