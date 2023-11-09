@@ -87,8 +87,12 @@ Json::Value& operator<<(Json::Value& node, const host& host) {
 	if (host.mac) node["mac"] = *host.mac;
 	Json::Value& hostnames = node["hostnames"];
 
-	for (const std::string& hostname : host.hostnames) {
-		hostnames.append(hostname);
+	if (host.hostnames.empty()) {
+		hostnames.resize(0);
+	} else {
+		for (const std::string& hostname : host.hostnames) {
+			hostnames.append(hostname);
+		}
 	}
 
 	return node;
