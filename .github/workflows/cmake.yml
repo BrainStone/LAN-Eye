@@ -25,22 +25,12 @@ jobs:
         steps:
             -   uses: actions/checkout@v4
 
-            -   name: Before cache
-                run: |
-                    tree -L 3
-                    find -name .git -type d
-
             -   name: Cache cmake dependencies
                 id: cmake-deps
                 uses: actions/cache@v3
                 with:
                     path: ${{ env.CPM_SOURCE_CACHE }}
                     key: ${{ runner.os }}
-
-            -   name: After cache
-                run: |
-                    tree -L 3
-                    find -name .git -type d
 
             -   name: Install build dependencies
                 run: ./install_build_deps.sh auto
@@ -58,11 +48,6 @@ jobs:
                 env:
                     CC: ${{ steps.install_cc.outputs.cc }}
                     CXX: ${{ steps.install_cc.outputs.cxx }}
-
-            -   name: After configure
-                run: |
-                    tree -L 3
-                    find -name .git -type d
 
             -   name: Build
                 # Build your program with the given configuration
