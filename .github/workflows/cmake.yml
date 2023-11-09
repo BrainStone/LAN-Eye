@@ -19,15 +19,17 @@ jobs:
 
         runs-on: ubuntu-22.04
 
+        env:
+            CPM_SOURCE_CACHE: ~/.cache/CPM
+
         steps:
             -   uses: actions/checkout@v4
 
-            -   name: Cache cmake dependencies
+            -   name: Cache CPM dependencies
                 id: cmake-deps
                 uses: actions/cache@v3
                 with:
-                    # cmake cache files are stored in `$build_dir/_deps`. And the actual repos are named `${repo}-src`
-                    path: build/_deps/*-src
+                    path: ${{ env.CPM_SOURCE_CACHE }}
                     key: ${{ runner.os }}
 
             -   name: Install build dependencies
@@ -60,8 +62,8 @@ jobs:
                 # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
                 run: ctest -C ${{ matrix.build_type }} --output-on-failure
 
-            # upload test results
-            -   uses: actions/upload-artifact@v3
+            -   name: Upload test results
+                uses: actions/upload-artifact@v3
                 if: success() || failure()
                 with:
                     name: test-results_${{ matrix.build_type }}_${{ matrix.compiler }}
