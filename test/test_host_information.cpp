@@ -1,3 +1,4 @@
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -16,21 +17,39 @@ const std::pair<host, std::string> host_test_cases[]{
      R"({"hostnames":["example.com","example.local","aaaaaaaaa"],"ip":"1.2.3.4"})"},
 };
 
-TEST(TestChronoHelpers, MakeTimePoint) {
+class TestChronoHelpers : public ::testing::TestWithParam<std::intmax_t> {
+protected:
 	using system_tp_seconds_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>;
 	using steady_tp_seconds_t = std::chrono::time_point<std::chrono::steady_clock, std::chrono::seconds>;
 	using system_tp_milliseconds_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
 	using steady_tp_milliseconds_t = std::chrono::time_point<std::chrono::steady_clock, std::chrono::milliseconds>;
 
-	for (typename std::chrono::seconds::rep num : {0, 10000, -10000}) {
-		EXPECT_EQ(system_tp_seconds_t{std::chrono::seconds{num}}, make_time_point<system_tp_seconds_t>(num));
-		EXPECT_EQ(steady_tp_seconds_t{std::chrono::seconds{num}}, make_time_point<steady_tp_seconds_t>(num));
-		EXPECT_EQ(system_tp_milliseconds_t{std::chrono::milliseconds{num}},
-		          make_time_point<system_tp_milliseconds_t>(num));
-		EXPECT_EQ(steady_tp_milliseconds_t{std::chrono::milliseconds{num}},
-		          make_time_point<steady_tp_milliseconds_t>(num));
-	}
+	using double_tp_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>>;
+	using int_milli_tp_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
+};
 
+TEST_P(TestChronoHelpers, MakeTimePoint) {
+	auto num = GetParam();
+
+	EXPECT_EQ(system_tp_seconds_t{std::chrono::seconds{num}}, make_time_point<system_tp_seconds_t>(num));
+	EXPECT_EQ(steady_tp_seconds_t{std::chrono::seconds{num}}, make_time_point<steady_tp_seconds_t>(num));
+	EXPECT_EQ(system_tp_milliseconds_t{std::chrono::milliseconds{num}}, make_time_point<system_tp_milliseconds_t>(num));
+	EXPECT_EQ(steady_tp_milliseconds_t{std::chrono::milliseconds{num}}, make_time_point<steady_tp_milliseconds_t>(num));
+}
+
+TEST_P(TestChronoHelpers, TimePointCast) {
+	auto num = GetParam();
+
+	EXPECT_EQ(make_time_point<int_milli_tp_t>(num),
+	          time_point_cast<int_milli_tp_t>(make_time_point<double_tp_t>(num / 1000.0L)));
+	EXPECT_EQ(make_time_point<int_milli_tp_t>(num), (time_point_cast<int_milli_tp_t, double_tp_t>(num / 1000.0L)));
+}
+
+INSTANTIATE_TEST_SUITE_P(Simple, TestChronoHelpers, ::testing::Values(0, 10000, -10000, 123456));
+INSTANTIATE_TEST_SUITE_P(RealTimestamps, TestChronoHelpers,
+                         ::testing::Values(1699493856282, std::numeric_limits<std::int32_t>::max() * 1000L));
+
+TEST(TestChronoHelpers, MakeTimePointNow) {
 	auto system_now = std::chrono::system_clock::now();
 	auto steady_now = std::chrono::steady_clock::now();
 
@@ -38,17 +57,6 @@ TEST(TestChronoHelpers, MakeTimePoint) {
 	          make_time_point<std::chrono::system_clock::time_point>(system_now.time_since_epoch().count()));
 	EXPECT_EQ(steady_now,
 	          make_time_point<std::chrono::steady_clock::time_point>(steady_now.time_since_epoch().count()));
-}
-
-TEST(TestChronoHelpers, TimePointCast) {
-	using double_tp_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>>;
-	using int_milli_tp_t = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
-
-	for (typename int_milli_tp_t::duration::rep num : {0, 10000, -10000, 123456}) {
-		EXPECT_EQ(make_time_point<int_milli_tp_t>(num),
-		          time_point_cast<int_milli_tp_t>(make_time_point<double_tp_t>(num / 1000.0)));
-		EXPECT_EQ(make_time_point<int_milli_tp_t>(num), (time_point_cast<int_milli_tp_t, double_tp_t>(num / 1000.0)));
-	}
 }
 
 TEST(TestHost, JsonDeserialization) {
