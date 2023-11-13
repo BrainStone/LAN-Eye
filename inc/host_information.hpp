@@ -1,7 +1,7 @@
 #pragma once
 
-#include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -56,14 +56,18 @@ struct host_information {
 
 	friend const Json::Value& operator>>(const Json::Value& node, host_information& host_information);
 	friend Json::Value& operator<<(Json::Value& node, const host_information& host_information);
+
+	struct first_seen_comparator {
+		constexpr bool operator()(const host_information& lhs, const host_information& rhs) const;
+	};
 };
 
-using host_map_t = std::map<host_information::time_point_t, host_information>;
+using host_list_t = std::multiset<host_information, host_information::first_seen_comparator>;
 
-extern host_map_t current_hosts_map;
+extern host_list_t current_hosts_list;
 
-const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map);
-Json::Value& operator<<(Json::Value& node, const host_map_t& host_map);
+const Json::Value& operator>>(const Json::Value& node, host_list_t& host_list);
+Json::Value& operator<<(Json::Value& node, const host_list_t& host_list);
 
 // Key name, expected type, required, reference to node
 using json_mapping_t = std::tuple<const char*, Json::ValueType, bool, Json::Value&>;

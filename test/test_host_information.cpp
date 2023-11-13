@@ -194,3 +194,49 @@ INSTANTIATE_TEST_SUITE_P(
                              .last_seen = make_time_point<host_information::time_point_t>(
                                  std::numeric_limits<std::int32_t>::max() * 1000L + 1234L)},
             R"({"first_seen":2147483648.234,"host":{"hostnames":[],"ip":"1.2.3.4"},"last_seen":2147483648.234})"}));
+
+using TestHostList_testcase_t = std::tuple<host_list_t, std::string>;
+
+class TestHostList : public ::testing::TestWithParam<TestHostList_testcase_t>, public CommonSerizialitionTest {};
+
+TEST_P(TestHostList, JsonDeserialization) {
+	TestHostList_testcase_t test = GetParam();
+
+	host_list_t host_list;
+	Json::Value root;
+
+	ASSERT_TRUE(reader.parse(std::get<1>(test), root));
+
+	root >> host_list;
+
+	EXPECT_EQ(std::get<0>(test), host_list);
+}
+
+TEST_P(TestHostList, JsonSerialization) {
+	TestHostList_testcase_t test = GetParam();
+
+	Json::Value root;
+	root << std::get<0>(test);
+
+	EXPECT_EQ(std::get<1>(test), Json::writeString(builder, root));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Simple, TestHostList,
+    ::testing::Values(
+        TestHostList_testcase_t{
+            host_list_t{host_information{.host_data = host{.ip = boost::asio::ip::make_address("1.2.3.4")}}},
+            "[{\"first_seen\":0.0,\"host\":{\"hostnames\":[],\"ip\":\"1.2.3.4\"},\"last_seen\":0.0}]"},
+        TestHostList_testcase_t{
+            host_list_t{host_information{.host_data = host{.ip = boost::asio::ip::make_address("1.2.3.4")}},
+                        host_information{.host_data = host{.ip = boost::asio::ip::make_address("4.3.2.1")},
+                                         .first_seen = make_time_point<host_information::time_point_t>(1)}},
+            R"([{"first_seen":0.001,"host":{"hostnames":[],"ip":"4.3.2.1"},"last_seen":0.0},{"first_seen":0.0,"host":{"hostnames":[],"ip":"1.2.3.4"},"last_seen":0.0}])"}));
+INSTANTIATE_TEST_SUITE_P(
+    EdgeCases, TestHostList,
+    ::testing::Values(
+        TestHostList_testcase_t{host_list_t{}, R"([])"},
+        TestHostList_testcase_t{
+            host_list_t{host_information{.host_data = host{.ip = boost::asio::ip::make_address("1.2.3.4")}},
+                        host_information{.host_data = host{.ip = boost::asio::ip::make_address("4.3.2.1")}}},
+            R"([{"first_seen":0.0,"host":{"hostnames":[],"ip":"1.2.3.4"},"last_seen":0.0},{"first_seen":0.0,"host":{"hostnames":[],"ip":"4.3.2.1"},"last_seen":0.0}])"}));
