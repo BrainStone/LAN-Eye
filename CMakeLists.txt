@@ -12,8 +12,8 @@ add_library(${PROJECT_NAME}_lib STATIC
         # Common utils
         inc/common.hpp inc/ratio_utils.hpp
         # Sources
-        inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp inc/host_information.hpp
-        src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp src/host_information.cpp
+        inc/server.hpp inc/logger.hpp inc/scanner.hpp inc/capability.hpp inc/host_information.hpp inc/callback_handler.hpp
+        src/server.cpp src/logger.cpp src/scanner.cpp src/capability.cpp src/host_information.cpp inc/callback_handler.inc
 )
 target_include_directories(${PROJECT_NAME}_lib PUBLIC inc)
 set_property(TARGET ${PROJECT_NAME}_lib PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDARD})
