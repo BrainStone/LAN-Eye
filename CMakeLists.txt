@@ -40,6 +40,8 @@ find_library(LIBCAP_LIBRARY cap)
 set(CPM_USE_LOCAL_PACKAGES On)
 
 ## Boost
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 CPMAddPackage(
         NAME Boost
         VERSION 1.83.0
