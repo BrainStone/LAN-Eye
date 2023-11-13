@@ -25,7 +25,7 @@ bool callback_handler<T...>::callback_handle::operator==(const callback_handle& 
 
 template <typename... T>
 callback_handler<T...>::callback_handle::handle_t& callback_handler<T...>::callback_handle::get(bool invalidate) {
-	if (!*valid) {
+	if (!is_valid()) {
 		throw std::invalid_argument{"handle is invalid"};
 	}
 

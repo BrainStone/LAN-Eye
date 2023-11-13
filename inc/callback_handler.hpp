@@ -21,11 +21,11 @@ public:
 		explicit callback_handle(handle_t&& handle);
 
 	public:
-		[[nodiscard]] bool is_valid() const noexcept;
-		explicit operator bool() const noexcept;
+		[[nodiscard]] inline bool is_valid() const noexcept;
+		inline explicit operator bool() const noexcept;
 
-		[[nodiscard]] bool operator==(const callback_handle& other) const noexcept;
-		[[nodiscard]] bool operator!=(const callback_handle& other) const noexcept = default;
+		[[nodiscard]] inline bool operator==(const callback_handle& other) const noexcept;
+		[[nodiscard]] inline bool operator!=(const callback_handle& other) const noexcept = default;
 
 	protected:
 		[[nodiscard]] handle_t& get(bool invalidate = true);
