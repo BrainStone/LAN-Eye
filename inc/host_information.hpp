@@ -43,19 +43,13 @@ struct host {
 	friend Json::Value& operator<<(Json::Value& node, const host& host);
 };
 
-class host_information {
-public:
+struct host_information {
 	using duration_t = std::chrono::milliseconds;
 	using time_point_t = std::chrono::time_point<std::chrono::system_clock, duration_t>;
 
-private:
 	host host_data;
 	time_point_t first_seen;
 	time_point_t last_seen;
-
-public:
-	host_information() = default;
-	host_information(host host_data, const time_point_t& first_seen, const time_point_t& last_seen);
 
 	bool operator==(const host_information& other) const = default;
 	bool operator!=(const host_information& other) const = default;

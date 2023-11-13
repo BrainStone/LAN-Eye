@@ -98,10 +98,6 @@ Json::Value& operator<<(Json::Value& node, const host& host) {
 	return node;
 }
 
-host_information::host_information(host host_data, const host_information::time_point_t& first_seen,
-                                   const host_information::time_point_t& last_seen)
-    : host_data(std::move(host_data)), first_seen(first_seen), last_seen(last_seen) {}
-
 const Json::Value& operator>>(const Json::Value& node, host_information& host_information) {
 	using time_point_t = host_information::time_point_t;
 
