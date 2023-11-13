@@ -16,6 +16,8 @@ protected:
 Json::StreamWriterBuilder createBuilder() {
 	Json::StreamWriterBuilder builder{};
 	builder["indentation"] = "";
+	builder["precision"] = 3;
+	builder["precisionType"] = "decimal";
 
 	return builder;
 }

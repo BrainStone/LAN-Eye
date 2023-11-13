@@ -1,7 +1,5 @@
 #include "host_information.hpp"
 
-#include <utility>
-
 #include "boost/algorithm/string.hpp"
 #include "common.hpp"
 
@@ -122,8 +120,6 @@ const Json::Value& operator>>(const Json::Value& node, host_information& host_in
 }
 
 Json::Value& operator<<(Json::Value& node, const host_information& host_information) {
-	using time_point_t = host_information::time_point_t;
-
 	if (!node.isObject() && !node.isNull()) {
 		LOG_DEBUG << "Expected node to be an object";
 		return node;
