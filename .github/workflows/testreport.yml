@@ -25,7 +25,7 @@ jobs:
                     - Debug
                 compiler:
                     - gcc
-                    # - clang # doesn't compile boost
+                    - clang
 
         steps:
             -   uses: dorny/test-reporter@v1
