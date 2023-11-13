@@ -84,13 +84,11 @@ Json::Value& operator<<(Json::Value& node, const host& host) {
 	node["ip"] = host.ip.to_string();
 	if (host.mac) node["mac"] = *host.mac;
 	Json::Value& hostnames = node["hostnames"];
+	hostnames.resize(host.hostnames.size());
+	Json::ArrayIndex i = 0;
 
-	if (host.hostnames.empty()) {
-		hostnames.resize(0);
-	} else {
-		for (const std::string& hostname : host.hostnames) {
-			hostnames.append(hostname);
-		}
+	for (const std::string& hostname : host.hostnames) {
+		hostnames[i++] = hostname;
 	}
 
 	return node;
@@ -132,7 +130,7 @@ Json::Value& operator<<(Json::Value& node, const host_information& host_informat
 	return node;
 }
 
-host_map_t host_map{};
+host_map_t current_hosts_map{};
 
 const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map) {
 	host_map.clear();
@@ -145,19 +143,29 @@ const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map) {
 	for (const Json::Value& host_node : node) {
 		host_information hi;
 		host_node >> hi;
+
+		// We can't have duplicates and incrementing in the millisecond range is fine
+		while (!host_map.insert(std::make_pair(hi.first_seen, hi)).second) {
+			++hi.first_seen;
+		}
 	}
 
 	return node;
 }
 
 Json::Value& operator<<(Json::Value& node, const host_map_t& host_map) {
-	if (!node.isArray()) {
+	if (!node.isArray() && !node.isNull()) {
 		LOG_DEBUG << "Expected node to be an array";
 		return node;
 	}
 
 	node.clear();
 	node.resize(host_map.size());
+	Json::ArrayIndex i = 0;
+
+	for (const host_map_t::value_type& host : host_map) {
+		node[i++] << host.second;
+	}
 
 	return node;
 }

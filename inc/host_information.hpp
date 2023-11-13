@@ -60,7 +60,7 @@ struct host_information {
 
 using host_map_t = std::map<host_information::time_point_t, host_information>;
 
-extern host_map_t host_map;
+extern host_map_t current_hosts_map;
 
 const Json::Value& operator>>(const Json::Value& node, host_map_t& host_map);
 Json::Value& operator<<(Json::Value& node, const host_map_t& host_map);
