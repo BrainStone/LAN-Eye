@@ -20,12 +20,14 @@ public:
 	protected:
 		explicit callback_handle(handle_t&& handle);
 
+		inline void verify_handle() const;
+
 	public:
 		[[nodiscard]] inline bool is_valid() const noexcept;
 		inline explicit operator bool() const noexcept;
 
-		[[nodiscard]] inline bool operator==(const callback_handle& other) const noexcept;
-		[[nodiscard]] inline bool operator!=(const callback_handle& other) const noexcept = default;
+		[[nodiscard]] bool operator==(const callback_handle& other) const;
+		[[nodiscard]] bool operator!=(const callback_handle& other) const = default;
 
 	protected:
 		[[nodiscard]] handle_t& get(bool invalidate = true);

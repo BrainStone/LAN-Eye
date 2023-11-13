@@ -9,6 +9,13 @@ callback_handler<T...>::callback_handle::callback_handle(handle_t&& handle)
     : valid{std::make_shared<bool>(true)}, handle{handle} {}
 
 template <typename... T>
+void callback_handler<T...>::callback_handle::verify_handle() const {
+	if (!is_valid()) {
+		throw std::invalid_argument{"handle is invalid"};
+	}
+}
+
+template <typename... T>
 bool callback_handler<T...>::callback_handle::is_valid() const noexcept {
 	return *valid;
 }
@@ -19,15 +26,15 @@ callback_handler<T...>::callback_handle::operator bool() const noexcept {
 }
 
 template <typename... T>
-bool callback_handler<T...>::callback_handle::operator==(const callback_handle& other) const noexcept {
+bool callback_handler<T...>::callback_handle::operator==(const callback_handle& other) const {
+	verify_handle();
+
 	return handle == other.handle;
 }
 
 template <typename... T>
 callback_handler<T...>::callback_handle::handle_t& callback_handler<T...>::callback_handle::get(bool invalidate) {
-	if (!is_valid()) {
-		throw std::invalid_argument{"handle is invalid"};
-	}
+	verify_handle();
 
 	if (invalidate) *valid = false;
 
