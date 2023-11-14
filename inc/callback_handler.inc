@@ -33,7 +33,7 @@ bool callback_handler<T...>::callback_handle::operator==(const callback_handle& 
 }
 
 template <typename... T>
-callback_handler<T...>::callback_handle::handle_t& callback_handler<T...>::callback_handle::get(bool invalidate) {
+auto callback_handler<T...>::callback_handle::get(bool invalidate) -> handle_t& {
 	verify_handle();
 
 	if (invalidate) *valid = false;
@@ -42,7 +42,7 @@ callback_handler<T...>::callback_handle::handle_t& callback_handler<T...>::callb
 }
 
 template <typename... T>
-callback_handler<T...>::callback_handle callback_handler<T...>::register_callback(const callback_t& callback) noexcept {
+auto callback_handler<T...>::register_callback(const callback_t& callback) noexcept -> callback_handle {
 	callbacks.push_back(callback);
 	return callback_handle{std::prev(callbacks.end())};
 }
