@@ -11,7 +11,7 @@ public:
 
 	class callback_handle {
 	protected:
-		using handle_t = std::list<callback_t>::iterator;
+		using handle_t = typename std::list<callback_t>::iterator;
 
 	private:
 		std::shared_ptr<bool> valid;
