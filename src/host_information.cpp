@@ -130,11 +130,6 @@ Json::Value& operator<<(Json::Value& node, const host_information& host_informat
 	return node;
 }
 
-constexpr bool host_information::first_seen_comparator::operator()(const host_information& lhs,
-                                                                   const host_information& rhs) const {
-	return lhs.first_seen > rhs.first_seen;
-}
-
 host_list_t current_hosts_list{};
 
 const Json::Value& operator>>(const Json::Value& node, host_list_t& host_list) {

@@ -58,7 +58,9 @@ struct host_information {
 	friend Json::Value& operator<<(Json::Value& node, const host_information& host_information);
 
 	struct first_seen_comparator {
-		constexpr bool operator()(const host_information& lhs, const host_information& rhs) const;
+		constexpr bool operator()(const host_information& lhs, const host_information& rhs) const {
+			return lhs.first_seen > rhs.first_seen;
+		}
 	};
 };
 
