@@ -39,3 +39,13 @@ gtest_discover_tests(${PROJECT_NAME} XML_OUTPUT_DIR ${CMAKE_BINARY_DIR}/reports)
 
 # Link test executable against gtest & gtest_main
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main ${PARENT_PROJECT_NAME}_lib)
+
+# Enable IPO/LTO
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_result OUTPUT IPO_error)
+
+if (IPO_result)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+else ()
+    message(WARNING "IPO is not supported: ${IPO_error}")
+endif ()

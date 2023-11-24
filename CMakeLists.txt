@@ -22,6 +22,16 @@ set_property(TARGET ${PROJECT_NAME}_lib PROPERTY CXX_STANDARD ${CMAKE_CXX_STANDA
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)
 
+# Enable IPO/LTO
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_result OUTPUT IPO_error)
+
+if (IPO_result)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+else ()
+    message(WARNING "IPO is not supported: ${IPO_error}")
+endif ()
+
 # Add CPM
 file(
         DOWNLOAD
