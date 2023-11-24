@@ -7,7 +7,7 @@
 template <typename... T>
 class callback_handler {
 public:
-	using callback_t = std::function<void(T...)>;
+	using callback_t = std::function<void(const T&...)>;
 
 	class callback_handle {
 	protected:
